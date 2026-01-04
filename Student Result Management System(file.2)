@@ -1,0 +1,85 @@
+#include <iostream>
+#include <iomanip>
+#include "member1.cpp"   
+using namespace std;
+
+void addStudent() {
+    Student s;
+    cout << "Enter Roll Number: ";
+    cin >> s.roll;
+
+    cout << "Enter Name: ";
+    cin.ignore();
+    getline(cin, s.name);
+
+    cout << "Enter marks of 5 subjects:\n";
+    for (int i = 0; i < 5; i++)
+        cin >> s.marks[i];
+
+    s.calculate();
+    students.push_back(s);
+    save();
+}
+
+void displayAll() {
+    cout << left << setw(10) << "Roll" << setw(20) << "Name"
+         << setw(10) << "Total" << setw(10) << "Average" << "Grade\n";
+
+    for (auto &s : students) {
+        cout << left << setw(10) << s.roll << setw(20) << s.name
+             << setw(10) << s.total << setw(10) << s.average
+             << s.grade << "\n";
+    }
+}
+
+void searchStudent() {
+    int r;
+    cout << "Enter Roll Number: ";
+    cin >> r;
+
+    for (auto &s : students) {
+        if (s.roll == r) {
+            cout << "Name: " << s.name
+                 << "\nTotal: " << s.total
+                 << "\nAverage: " << s.average
+                 << "\nGrade: " << s.grade << endl;
+            return;
+        }
+    }
+    cout << "Student not found\n";
+}
+
+void deleteStudent() {
+    int r;
+    cout << "Enter Roll Number: ";
+    cin >> r;
+
+    for (auto it = students.begin(); it != students.end(); it++) {
+        if (it->roll == r) {
+            students.erase(it);
+            save();
+            cout << "Record deleted\n";
+            return;
+        }
+    }
+    cout << "Student not found\n";
+}
+
+int main() {
+    load();
+    int choice;
+
+    do {
+        cout << "\n1. Add Student\n2. Display All\n3. Search Student\n4. Delete Student\n5. Exit\nChoice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: addStudent(); break;
+            case 2: displayAll(); break;
+            case 3: searchStudent(); break;
+            case 4: deleteStudent(); break;
+        }
+    } while (choice != 5);
+
+    return 0;
+}
