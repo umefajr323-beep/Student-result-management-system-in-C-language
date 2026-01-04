@@ -1,85 +1,52 @@
-#include <iostream>
-#include <iomanip>
-#include "member1.cpp"   
+
+   
+  
+        
+
+      #include <iostream>
+#include <fstream>
+#include <vector>
 using namespace std;
 
-void addStudent() {
+class Student {
+public:
+    int roll;
+    string name;
+    int marks[5];
+    int total;
+    float average;
+    char grade;
+
+    void calculate() {
+        total = 0;
+        for (int i = 0; i < 5; i++)
+            total += marks[i];
+
+        average = total / 5.0;
+
+        if (average >= 90) grade = 'A';
+        else if (average >= 75) grade = 'B';
+        else if (average >= 60) grade = 'C';
+        else if (average >= 40) grade = 'D';
+        else grade = 'F';
+    }
+};
+
+vector<Student> students;
+void load() {
+    ifstream file("students.dat", ios::binary);
+    if (!file) return;
+
     Student s;
-    cout << "Enter Roll Number: ";
-    cin >> s.roll;
+    while (file.read((char*)&s, sizeof(s)))
+        students.push_back(s);
 
-    cout << "Enter Name: ";
-    cin.ignore();
-    getline(cin, s.name);
-
-    cout << "Enter marks of 5 subjects:\n";
-    for (int i = 0; i < 5; i++)
-        cin >> s.marks[i];
-
-    s.calculate();
-    students.push_back(s);
-    save();
+    file.close();
+}
+void save() {
+    ofstream file("students.dat", ios::binary | ios::trunc);
+    for (auto &s : students)
+        file.write((char*)&s, sizeof(s));
+    file.close();
 }
 
-void displayAll() {
-    cout << left << setw(10) << "Roll" << setw(20) << "Name"
-         << setw(10) << "Total" << setw(10) << "Average" << "Grade\n";
-
-    for (auto &s : students) {
-        cout << left << setw(10) << s.roll << setw(20) << s.name
-             << setw(10) << s.total << setw(10) << s.average
-             << s.grade << "\n";
-    }
-}
-
-void searchStudent() {
-    int r;
-    cout << "Enter Roll Number: ";
-    cin >> r;
-
-    for (auto &s : students) {
-        if (s.roll == r) {
-            cout << "Name: " << s.name
-                 << "\nTotal: " << s.total
-                 << "\nAverage: " << s.average
-                 << "\nGrade: " << s.grade << endl;
-            return;
-        }
-    }
-    cout << "Student not found\n";
-}
-
-void deleteStudent() {
-    int r;
-    cout << "Enter Roll Number: ";
-    cin >> r;
-
-    for (auto it = students.begin(); it != students.end(); it++) {
-        if (it->roll == r) {
-            students.erase(it);
-            save();
-            cout << "Record deleted\n";
-            return;
-        }
-    }
-    cout << "Student not found\n";
-}
-
-int main() {
-    load();
-    int choice;
-
-    do {
-        cout << "\n1. Add Student\n2. Display All\n3. Search Student\n4. Delete Student\n5. Exit\nChoice: ";
-        cin >> choice;
-
-        switch (choice) {
-            case 1: addStudent(); break;
-            case 2: displayAll(); break;
-            case 3: searchStudent(); break;
-            case 4: deleteStudent(); break;
-        }
-    } while (choice != 5);
-
-    return 0;
-}
